@@ -105,7 +105,7 @@ def train(args):
     logger.info("Model initialization for training and setting up the training environment")
     num_intents = 31
     args.num_features = 768
-    config_path = './no_unfreezing.cfg' ##pretrained ASR model
+    config_path = './experiments/no_unfreezing.cfg' ##pretrained ASR model
     config = read_config(config_path)
     train_dataset, valid_dataset, test_dataset = get_SLU_datasets(config) ##dataload
 
@@ -248,20 +248,20 @@ def train(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--datatype", default="speech", type=str,
+    parser.add_argument("--datatype", default="speechtext", type=str,
                         help="The name of datatype task to train")  # speech, text, speechtext
     parser.add_argument("--data", default="FluentAI", type=str,
                         help="data type to save, load model")  # FluentAI, ATIS, DSTC
-    parser.add_argument("--teacher_model", default="./bert-base-uncased", type=str)
+    parser.add_argument("--teacher_model", default="./meta/bert-base-uncased", type=str)
 
-    parser.add_argument('--seed', type=int, default=111, help="random seed for initialization")
-    parser.add_argument("--batch_size", default=, type=int, help="Batch size for training and evaluation.")
+    parser.add_argument('--seed', type=int, default=42, help="random seed for initialization")
+    parser.add_argument("--batch_size", default=8, type=int, help="Batch size for training and evaluation.")
 
-    parser.add_argument("--learning_rate", default=, type=float,
+    parser.add_argument("--learning_rate", default=1e-4, type=float,
                         help="The initial learning rate for Adam.") 
     parser.add_argument("--num_train_epochs", default=100, type=int,
                         help="Total number of training epochs to perform.")
-    parser.add_argument('--logging_steps', type=int, default=, help="Log every X updates steps.")
+    parser.add_argument('--logging_steps', type=int, default=10000, help="Log every X updates steps.")
 
     parser.add_argument('--hidden_size', type=int, default=256, help="Hidden size")
     parser.add_argument('--embedding_size', type=int, default=256, help="Embedding size.")
@@ -274,26 +274,26 @@ if __name__ == '__main__':
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    parser.add_argument("--nhead", default=, type=int, help="nhead.")
-    parser.add_argument("--nlayers", default=, type=int, help="nlayers.")
+    parser.add_argument("--nhead", default=8, type=int, help="nhead.")
+    parser.add_argument("--nlayers", default=4, type=int, help="nlayers.")
     parser.add_argument("--d_k", default=64, type=int, help="d_k.")
     parser.add_argument("--d_v", default=64, type=int, help="d_v.")
     parser.add_argument("--d_model", default=512, type=int, help="d_model.")
     parser.add_argument("--d_inner", default=768, type=int, help="d_inner.")
-    parser.add_argument('--label_smoothing', default=, type=float,
+    parser.add_argument('--label_smoothing', default=0.1, type=float,
                         help='smoothing')
     ##loss parameter
-    parser.add_argument('--alpha1', default=, type=float,
+    parser.add_argument('--alpha1', default=0.625, type=float,
                         help='alpha1')
-    parser.add_argument('--alpha2', default=, type=float,
+    parser.add_argument('--alpha2', default=0.125, type=float,
                         help='alpha2')
-    parser.add_argument('--alpha3', default=, type=float,
+    parser.add_argument('--alpha3', default=0.25, type=float,
                         help='alpha3')
 
     # optimizer
-    parser.add_argument('--k', default=, type=float,
+    parser.add_argument('--k', default=1, type=float,
                         help='tunable scalar multiply to learning rate')
-    parser.add_argument('--warmup_steps', default=, type=int,
+    parser.add_argument('--warmup_steps', default=4000, type=int,
                         help='warmup steps')
     args = parser.parse_args()
     train(args)

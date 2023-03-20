@@ -274,25 +274,29 @@ class SLUDataset(torch.utils.data.Dataset):
 		idx = idx % len(self.df)
 
 		wav_path = os.path.join(self.base_path, self.df.loc[idx].path)
-		effect = torchaudio.sox_effects.SoxEffectsChain()
-		effect.set_input_file(wav_path)
+		# effect = torchaudio.sox_effects.SoxEffectsChain()
+		# effect.set_input_file(wav_path)
+		effect = []
 		augment = False
 
 		if augment:
 			# speed/tempo
 			min_speed = 0.9; max_speed = 1.1; speed_range = max_speed-min_speed
 			speed = speed_range * np.random.rand(1)[0] + min_speed
-			effect.append_effect_to_chain("tempo", speed)
+			# effect.append_effect_to_chain("tempo", speed)
+			effect.append(['tempo', speed])
 			del speed
 
 			# volume
 			min_gain = -10; max_gain = 10; gain_range = max_gain-min_gain
 			gain_dB = gain_range * np.random.rand(1)[0] + min_gain
 			gain = 10**(gain_dB/20)
-			effect.append_effect_to_chain("vol", gain)
+			# effect.append_effect_to_chain("vol", gain)
+			effect.append('vol', gain)
 			del gain_dB
 
-		wav, fs = effect.sox_build_flow_effects()
+		# wav, fs = effect.sox_build_flow_effects()
+		wav, fs = torchaudio.sox_effects.apply_effects_file(wav_path, effect)
 		x = wav[0].numpy()
 		del wav, effect
 
@@ -553,3 +557,13 @@ class CollateWavsASR:
 		y_word = torch.stack(y_word)
 
 		return (x,y_phoneme,y_word)
+
+
+if __name__ == "__main__":
+	config_path = './experiments/no_unfreezing.cfg'
+	config = read_config(config_path)
+	train_dataset, valid_dataset, test_dataset = get_SLU_datasets(config)
+
+	for idx, batch in enumerate(test_dataset.loader):
+		x_data, y_data, text = batch
+		print(idx, x_data.shape, y_data, text)
