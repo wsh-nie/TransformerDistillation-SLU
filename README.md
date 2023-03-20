@@ -52,7 +52,7 @@ link: https://arxiv.org/pdf/2108.02598.pdf
 ## 实验结果
 
 1. 数据集
-* Fluent Speech Corpus
+* Fluent Speech Corpus: https://www.kaggle.com/datasets/tommyngx/fluent-speech-corpus 
 * ATIS
 ![table1](table1.png)
 
